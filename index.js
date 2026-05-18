@@ -8,8 +8,7 @@ import get from "./Routes/get.js"
 import post from "./Routes/post.js"
 import seasion from "./middleware/SeasionMiddleware.js"
 import helmet from "helmet";
-
-
+import mail from './config/mailservice.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
