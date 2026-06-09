@@ -6,7 +6,7 @@ import {nyari, post }from "../controller/loginAndRegist.js"
 const app = e.Router();
 
 
-app.post("/", req, post);
-app.post("/nyari", req, nyari);
+app.post("/",  post);
+// app.post("/nyari", req, nyari);
 
 export default app;

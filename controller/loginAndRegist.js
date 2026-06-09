@@ -1,5 +1,6 @@
 
 import bcrpyt from "bcrypt";
+import logbook from "../services/logbook.js"
 import connection from "../config/conection.js";
 import logins from '../services/login.js'
 import { response } from "../helpers/response.js";
@@ -18,19 +19,10 @@ export const nyari =async (req, res) =>{
 }
 
 export const post = async (req, res) => {
-  const { username, password } = req.body;
-  const passgweh = password;
-  const salt = 10;
-  const sql = "INSERT INTO login VALUES ( NULL , ? , ? )";
+ 
+ const hasil = await logbook(req)
+ response(hasil, 200 , res)
 
-  const hashing = await bcrpyt.hash(passgweh, salt)
-  const sekuel =  await connection.query(sql, [username, hashing])
-  try{
-    res.status(500).json(sekuel)
-  } catch(err){
-    console.log(err);
-    
-  }
 }
 
 

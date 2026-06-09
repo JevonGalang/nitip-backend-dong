@@ -1,6 +1,6 @@
 export function response(message, status, res){
     const template = {
-        message:message[0],
+        message:message,
         status:status
     }
 
