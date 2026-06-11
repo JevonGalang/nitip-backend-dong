@@ -1,11 +1,11 @@
 import inputUsers from "../models/inputUsers.js";
 
-export default function logbook(req) {
-     const {namaKetua, numberWa,kegiatanTerjadwal, matkul, dosenPengampu, jumnlahPeserta, tanggalKegiatan, jamMasuk, keterangan } = req.body;
+export default async function logbook(req) {
+     const {namalab, namaKetua, numberWa, Terjadwal, matkul, dosen, jumlahPeserta, tanggalKegiatan, jamMasuk, keterangan } = req.body;
      
-     const [...front] = [namaKetua, numberWa, matkul, dosenPengampu, jumnlahPeserta, tanggalKegiatan, jamMasuk, keterangan]   
+     const front = [namalab, namaKetua, numberWa, Terjadwal, matkul, dosen, jumlahPeserta, tanggalKegiatan, jamMasuk, keterangan];   
      console.log(front);
-     const hasilnya = inputUsers(front)
+     const hasilnya = await inputUsers(front);
 
-     return hasilnya
+     return hasilnya;
 }

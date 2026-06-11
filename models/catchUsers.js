@@ -1,7 +1,7 @@
 import db from '../config/conection.js'
-async function catchUsers(user,){
-    const sql = "SELECT * FROM login WHERE nama = ? "
-     const [query] = await db.query(sql, [user])
+async function catchUsers(){
+    const sql = "SELECT * FROM users JOIN laboratorium ON users.nama_lab = laboratorium.id_lab"
+     const [query] = await db.query(sql)
     try{
         return query
     } catch(error){
@@ -9,7 +9,7 @@ async function catchUsers(user,){
     } finally{
         console.log("SELESAI");
         
-    }q
+    }
 }
 
 export default catchUsers;

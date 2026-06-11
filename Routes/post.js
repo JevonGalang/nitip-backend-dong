@@ -1,8 +1,8 @@
-import bcrpyt from "bcrypt";
+
 import e from "express";
-// import connection from "../services/conection.js";
 import req from "../middleware/reqMiddleware.js";
-import {nyari, post }from "../controller/loginAndRegist.js"
+import { post }from "../controller/loginAndbooking.js"
+
 const app = e.Router();
 
 

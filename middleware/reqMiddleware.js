@@ -6,16 +6,6 @@ const send =(req,res, next) =>{
     kosong.push(username)
     kosong.push(password)
 
-    if(kosong[0].length <= maxlegth && kosong[1].length <= maxlegth) {
-        console.log(say + "ada filed nya cuy");
-        
-        next()
-    } else {
-        console.log(say + "gak ada filed nya");
-        
-       return res.status(404).json("kelebihan nih atau kekurangan nih")
-       
-    }
 }
 
 

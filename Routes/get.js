@@ -1,19 +1,10 @@
 import connection from "../config/conection.js"
 import e from "express";
 import send from "../middleware/reqMiddleware.js";
+import {history} from "../controller/alldatas.js"
+
 const app =e.Router()
 
-app.get("/", async (req,res)=>{
-
-    const [db] = await connection.query("SELECT * FROM users")
-    
-    try {
-        res.json(db)
-    } catch (error) {
-       res.json("error") 
-       console.log("get say: error karena " + error);
-       
-    }
-})
-
+app.get("/", history)
+app.get("/timestamp", history)
 export default app;
