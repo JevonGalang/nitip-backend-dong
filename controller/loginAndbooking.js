@@ -1,11 +1,12 @@
 
 import logbook from "../services/logbook.js"
 import { response } from "../helpers/response.js";
+import { input } from "../middleware/checkInput.js";
 const say = "iniPost say: "
 
 
 
-export const post = async (req, res) => {
+export const post = async (req,res) => {
   try {
     const hasil = await logbook(req);
     response(hasil, 200, res);

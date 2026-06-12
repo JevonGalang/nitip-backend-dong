@@ -9,7 +9,7 @@ import post from "./Routes/post.js"
 import seasion from "./middleware/SeasionMiddleware.js"
 import helmet from "helmet";
 import mail from './config/mailservice.js'
-
+import send from "./middleware/logInput.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = e()
@@ -19,8 +19,8 @@ app.use(bodyParser.json())
 app.use(cors())
 app.use(e.static(join(__dirname, "public")))
 app.use(seasion)
-app.use("/",get)
-app.use("/post", post)
+app.use("/get",send,get)
+app.use("/post", send ,post)
 
 
 app.listen(port, ()=>{
