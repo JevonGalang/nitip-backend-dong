@@ -5,6 +5,6 @@ import {history} from "../controller/alldatas.js"
 import { input } from "../middleware/checkInput.js";
 const app =e.Router()
 
-app.get("/",input,history)
-app.get("/timestamp",input ,history)
+app.get("/",logs,history)
+app.get("/timestamp",logs ,history)
 export default app;

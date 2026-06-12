@@ -19,8 +19,8 @@ app.use(bodyParser.json())
 app.use(cors())
 app.use(e.static(join(__dirname, "public")))
 app.use(seasion)
-app.use("/get",send,get)
-app.use("/post", send ,post)
+app.use("/get",get)
+app.use("/post", post)
 
 
 app.listen(port, ()=>{
