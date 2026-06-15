@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-
-export function hash(password,salt){
+ 
+export function hash(password,salt = 10){
    const resaultHash = bcrypt.hash(password,salt);
 
    if (resaultHash){
@@ -9,4 +9,9 @@ export function hash(password,salt){
     return false
    }
    
+}
+
+export function compare(password, hashed){
+   const resaultCompare = bcrypt.compare(password, hashed);
+   return resaultCompare
 }

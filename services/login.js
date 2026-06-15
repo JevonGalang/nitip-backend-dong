@@ -1,15 +1,23 @@
-import users from '../models/catchUsers.js'
-import {hash} from '../helpers/bycriptHash.js'
-export default async function logins(req){
-    
-    // const sqlcomand = "SELECT * FROM login WHERE nama = ?";
+import users from '../models/loginUsers.js'
+import {compare} from '../helpers/bycriptHash.js'
+export default async function login(req){
+
     const { username, password } = req.body;
-    // const usernya = password;
     const resaultdb = await users(username);  
-    const rehashpass = await hash(password)
-    console.log(resaultdb);
-    return resaultdb
+
+    if (resaultdb.length === 0){
+        throw new Error("username tidak ditemukan")
+    }
+
+    const cocok = await compare(password, resaultdb[0].password)
+
+    if (!cocok){
+        throw new Error("password salah")
+    }
+
+    console.log("login berhasil: " + resaultdb[0].nama);
+    return resaultdb[0]
   
- 
+
     
 }

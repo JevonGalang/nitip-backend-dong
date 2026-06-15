@@ -10,6 +10,7 @@ import seasion from "./middleware/SeasionMiddleware.js"
 import helmet from "helmet";
 import mail from './config/mailservice.js'
 import send from "./middleware/logInput.js";
+import jwt from "jsonwebtoken"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = e()
