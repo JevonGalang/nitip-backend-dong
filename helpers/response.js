@@ -1,7 +1,8 @@
-export function response(message, status, res){
+export function response(message, status, res, token = "none"){
     const template = {
         message:message,
-        status:status
+        status:status,
+        token:token
     }
 
     res.send(template)

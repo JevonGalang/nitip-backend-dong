@@ -1,7 +1,7 @@
 
-
+const times = new Date()
 const seasion = (req,res, next)=>{
-    console.log("seasonMidSay: masuk nih di " + Date.now())
+    console.log("seasonMidSay: masuk nih tanggal: " + times)
     next()
 }
 

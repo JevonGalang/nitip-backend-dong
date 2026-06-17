@@ -1,5 +1,8 @@
-export function input(req,res,next) {
-    const {...lll} = req.body
-    console.log(lll)
+export function inputLogin(req,res,next) {
+    const {username, password} = req.body
+    if (!username || !password){
+        res.json({message:"username/password tidak boleh kosong"})
+    }
+    
     next()
 }

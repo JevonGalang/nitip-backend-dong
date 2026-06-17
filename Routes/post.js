@@ -2,13 +2,14 @@
 import e from "express";
 import logs from "../middleware/logInput.js";
 import { post }from "../controller/loginAndbooking.js"
-import { register, masuk } from "../controller/loginAndbooking.js";
+import {  masuk } from "../controller/loginAndbooking.js";
+import check from "../middleware/fieldCheck.js";
+import { inputLogin } from "../middleware/checkInput.js";
 const app = e.Router();
 
 
-app.post("/", logs ,post);
-app.post("/register", register)
-app.post("/login", masuk)
+app.post("/form", logs, check ,post);
+app.post("/login",inputLogin ,masuk)
 
 // app.post("/nyari", req, nyari);
 
