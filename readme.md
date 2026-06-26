@@ -525,15 +525,70 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiI...
 
 ---
 
+#### `GET /get/history/schadule` — Ambil Data History Jadwal (Protected)
+
+Ambil semua data riwayat jadwal dari tabel `history_schadule` (joined dengan data laboratorium).
+
+---
+
+#### `GET /get/history/logbook` — Ambil Data History Logbook (Protected)
+
+Ambil semua data riwayat logbook dari tabel `history_logbook` (joined dengan history_schadule dan laboratorium).
+
+---
+
+#### `POST /post/history/schadule` — Simpan Jadwal ke History (Protected)
+
+Menyimpan data jadwal ke tabel `history_schadule`.
+
+**Request Body:**
+```json
+{
+  "id": 1,
+  "lab_id": 2,
+  "prodi_kelas": "TI-1A",
+  "matkul": "Sistem Operasi",
+  "dosen": "Dosen X",
+  "tanggal": "2026-06-25",
+  "jammulai": "08:00:00",
+  "jamselesai": "10:00:00"
+}
+```
+
+---
+
+#### `POST /post/history/logbook` — Simpan Logbook ke History (Protected)
+
+Menyimpan data logbook ke tabel `history_logbook`.
+
+**Request Body:**
+```json
+{
+  "id": 1,
+  "schadules": 1,
+  "namaMahasiswa": "Budi",
+  "nim": "123456",
+  "kelas": "TI-1A",
+  "jumlah_hadir": 30,
+  "no_wa": "0812345678"
+}
+```
+
+---
+
 ### Ringkasan Endpoints
 
-| Method   | Endpoint          | Auth  | Deskripsi                          |
-| -------- | ----------------- | ----- | ---------------------------------- |
-| `GET`    | `/get/`           | ❌    | Ambil semua data booking           |
-| `GET`    | `/get/timestamp`  | ✅ JWT | Ambil semua data (protected)       |
-| `DELETE` | `/get/:id`        | ✅ JWT | Hapus data booking by ID           |
-| `POST`   | `/post/form`      | ❌    | Input data booking laboratorium    |
-| `POST`   | `/post/login`     | ❌    | Login dan dapatkan JWT token       |
+| Method   | Endpoint                  | Auth  | Deskripsi                          |
+| -------- | ------------------------- | ----- | ---------------------------------- |
+| `GET`    | `/get/`                   | ❌    | Ambil semua data booking           |
+| `GET`    | `/get/timestamp`          | ✅ JWT | Ambil semua data (protected)       |
+| `GET`    | `/get/history/schadule`   | ✅ JWT | Ambil history jadwal               |
+| `GET`    | `/get/history/logbook`    | ✅ JWT | Ambil history logbook              |
+| `DELETE` | `/get/:id`                | ✅ JWT | Hapus data booking by ID           |
+| `POST`   | `/post/form`              | ❌    | Input data booking laboratorium    |
+| `POST`   | `/post/login`             | ❌    | Login dan dapatkan JWT token       |
+| `POST`   | `/post/history/schadule`  | ✅ JWT | Simpan data jadwal ke history      |
+| `POST`   | `/post/history/logbook`   | ✅ JWT | Simpan data logbook ke history     |
 
 ---
 
