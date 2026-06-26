@@ -346,7 +346,7 @@ http://localhost:3000
 
 ### 🔓 Public Endpoints
 
-#### `POST /post/login` — Login Mahasiswa
+#### `POST /post/login` — Login Dosen dan admin
 
 Login dan dapatkan JWT token.
 
@@ -354,7 +354,7 @@ Login dan dapatkan JWT token.
 
 ```json
 {
-  "username": "nama_mahasiswa",
+  "username": "nama_dosen/admin",
   "password": "password123"
 }
 ```
@@ -365,7 +365,7 @@ Login dan dapatkan JWT token.
 {
   "users": {
     "userId": 1,
-    "username": "nama_mahasiswa"
+    "username": "nama_dosen/admin"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "status": 200

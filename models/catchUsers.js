@@ -1,14 +1,15 @@
 import db from '../config/conection.js'
 async function catchUsers(){
-    const sql = "SELECT * FROM users LEFT JOIN laboratorium ON users.nama_lab = laboratorium.id_lab"
+    const sql = "SELECT * FROM schadule LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab"
     try{
         const [query] = await db.query(sql)
+        console.log("models catchUsers say: Berhasil mengambil data users + lab");
         return query
     } catch(error){
-        console.log("models say: " + error)
+        console.error("models catchUsers say error: " + error)
         return "models say: " + error
     } finally{
-        console.log("SELESAI");
+        console.log("catchUsers: SELESAI");
     }
 }
 
