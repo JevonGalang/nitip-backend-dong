@@ -1,5 +1,6 @@
 import e from "express";
-import { hapus, bersihkanJadwal, bersihkanLogbook, hapusLogbookById } from "../controller/alldatas.js";
+import { hapus, bersihkanJadwal } from "../controller/scheduleController.js";
+import { bersihkanLogbook, hapusLogbookById } from "../controller/logbookController.js";
 import validmid from "../middleware/validMiddleware.js";
 
 const app = e.Router();
@@ -10,4 +11,3 @@ app.delete("/logbook/:id", validmid, hapusLogbookById);
 app.delete("/:id", validmid, hapus);
 
 export default app;
-

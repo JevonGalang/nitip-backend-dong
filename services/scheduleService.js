@@ -1,0 +1,59 @@
+import {
+    getAllSchedules,
+    clearAllSchedules,
+    deleteScheduleById,
+    getSchedulesByLabType,
+    createSchedule,
+    getSchedulesWithLab
+} from "../models/scheduleModel.js"
+
+export async function getAllSchedulesService() {
+    const hasilnya = await getAllSchedules()
+    return hasilnya
+}
+
+export async function clearAllSchedulesService() {
+    const hasilnya = await clearAllSchedules()
+    return hasilnya
+}
+
+export async function deleteScheduleService(req) {
+    const { id } = req.params;
+    const hasilnya = await deleteScheduleById(id);
+
+    if (hasilnya.affectedRows === 0){
+        throw new Error("data dengan id tersebut tidak ditemukan")
+    }
+
+    return hasilnya;
+}
+
+export async function getSchedulesByLabTypeService(req) {
+    let jenisLab = req.params.jenis_lab || req.params.jenislab || req.params.jadwal;
+    
+    if (jenisLab) {
+        jenisLab = jenisLab.trim().toUpperCase()
+        if (jenisLab === "FISIOLOGI") {
+            jenisLab = "BIOLOGI"
+        }
+    }
+    
+    try {
+        const hasilnya = await getSchedulesByLabType(jenisLab)
+        return hasilnya;
+    } catch (error) {
+        console.error("spillbyjenis say: " + error)
+        throw error
+    }
+}
+
+export async function createScheduleService(req) {
+    const { labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya } = req.body
+    const inputData = await createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya)
+    return inputData;
+}
+
+export async function getSchedulesWithLabService() {
+    const hasilnya = await getSchedulesWithLab()
+    return hasilnya
+}

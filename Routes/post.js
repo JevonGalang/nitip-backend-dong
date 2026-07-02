@@ -1,13 +1,14 @@
-
 import e from "express";
 import logs from "../middleware/logInput.js";
-import { post, masuk, penambahanJadwal, register, penambahanLog}from "../controller/loginAndbooking.js"
+import { masuk, register } from "../controller/authController.js"
+import { penambahanJadwal } from "../controller/scheduleController.js"
+import { post, penambahanLog } from "../controller/logbookController.js"
+import emailController from "../controller/supportController.js"
+import { postHistorySchaduleCtrl, postHistoryLogbookCtrl } from "../controller/historyController.js"
 import check from "../middleware/fieldCheck.js";
 import { inputLogin } from "../middleware/checkInput.js";
 import rateLimit from "express-rate-limit";
-import emailController from "../controller/emails.js"
 import validmid from "../middleware/validMiddleware.js"
-import { postHistorySchaduleCtrl, postHistoryLogbookCtrl } from "../controller/historyController.js"
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, 
@@ -19,12 +20,11 @@ const limiter = rateLimit({
 
 const app = e.Router();
 
-
-app.post("/form", logs, check ,post);
-app.post("/login",inputLogin,logs ,limiter ,masuk)
-app.post("/formadmin", logs,penambahanJadwal )
+app.post("/form", logs, check, post);
+app.post("/login", inputLogin, logs, limiter, masuk)
+app.post("/formadmin", logs, penambahanJadwal)
 app.post("/regist", register)
-app.post("/logbook",penambahanLog )
+app.post("/logbook", penambahanLog)
 app.post("/pengaduan", emailController)
 app.post("/history/schadule", validmid, logs, postHistorySchaduleCtrl)
 app.post("/history/logbook", validmid, logs, postHistoryLogbookCtrl)

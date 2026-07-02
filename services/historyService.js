@@ -1,15 +1,17 @@
-import getHistorySchadule from "../models/getHistorySchadule.js"
-import getHistoryLogbook from "../models/getHistoryLogbook.js"
-import insertHistorySchadule from "../models/insertHistorySchadule.js"
-import insertHistoryLogbook from "../models/insertHistoryLogbook.js"
+import {
+    getHistorySchedules,
+    getHistoryLogbooks,
+    createHistorySchedule,
+    createHistoryLogbook
+} from "../models/historyModel.js"
 
 export async function fetchHistorySchadule() {
-    const data = await getHistorySchadule()
+    const data = await getHistorySchedules()
     return data
 }
 
 export async function fetchHistoryLogbook() {
-    const data = await getHistoryLogbook()
+    const data = await getHistoryLogbooks()
     return data
 }
 
@@ -28,7 +30,7 @@ export async function addHistorySchadule(req) {
     const targetJamMulai = jammulai || jammulainya
     const targetJamSelesai = jamselesai || jamselesainya
 
-    const dataInput = await insertHistorySchadule(
+    const dataInput = await createHistorySchedule(
         targetId,
         targetLab,
         targetProdi,
@@ -55,7 +57,7 @@ export async function addHistoryLogbook(req) {
     const targetHadir = jumlah_hadir !== undefined ? jumlah_hadir : jumlahPeserta
     const targetWa = no_wa || nomorWa
 
-    const dataInput = await insertHistoryLogbook(
+    const dataInput = await createHistoryLogbook(
         targetId,
         targetSchadule,
         targetNama,
