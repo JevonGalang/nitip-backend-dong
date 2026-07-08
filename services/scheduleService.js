@@ -4,7 +4,8 @@ import {
     deleteScheduleById,
     getSchedulesByLabType,
     createSchedule,
-    getSchedulesWithLab
+    getSchedulesWithLab,
+    checkScheduleOverlap
 } from "../models/scheduleModel.js"
 
 export async function getAllSchedulesService() {
@@ -49,6 +50,13 @@ export async function getSchedulesByLabTypeService(req) {
 
 export async function createScheduleService(req) {
     const { labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya } = req.body
+    
+    // Pengecekan bentrok jadwal
+    const bentrok = await checkScheduleOverlap(labnya, tanggalnya, jammulainya, jamselesainya)
+    if (bentrok && bentrok.length > 0) {
+        throw new Error("Jadwal bertabrakan dengan kelas lain di laboratorium yang sama pada jam tersebut!")
+    }
+
     const inputData = await createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya)
     return inputData;
 }

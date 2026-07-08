@@ -52,7 +52,13 @@ export const post = async (req, res) => {
         getIO().emit("penggunaanlab:update", dataFresh)
     } catch (error) {
         console.error("Error in booking post:", error)
-        res.status(500).json({ error: error.message || "Internal Server Error" })
+        let status = 500;
+        if (error.message === "Jadwal tidak ditemukan!") {
+            status = 404;
+        } else if (error.message.includes("melebihi kapasitas")) {
+            status = 400;
+        }
+        res.status(status).json({ error: error.message || "Internal Server Error" })
     }
 }
 
@@ -67,8 +73,14 @@ export const penambahanLog = async (req, res) => {
         getIO().emit("logbook:update", dataFresh)
     } catch (err) {
         console.error(err)
-        return res.status(505).json({
-            pesan: "salah nih coba"
+        let status = 505;
+        if (err.message === "Jadwal tidak ditemukan!") {
+            status = 404;
+        } else if (err.message.includes("melebihi kapasitas")) {
+            status = 400;
+        }
+        return res.status(status).json({
+            pesan: err.message || "salah nih coba"
         })
     }
 }

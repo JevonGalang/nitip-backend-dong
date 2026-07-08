@@ -60,8 +60,9 @@ export const penambahanJadwal = async (req, res) => {
         getIO().emit("penggunaanlab:update", dataFresh)
     } catch (err) {
         console.error(err)
-        return res.status(404).json({
-            pesan: "error bos coba cari apa yang error"
+        const status = err.message.includes("Jadwal bertabrakan") ? 400 : 500;
+        return res.status(status).json({
+            pesan: err.message || "error bos coba cari apa yang error"
         })
     }
 }

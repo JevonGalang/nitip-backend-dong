@@ -82,3 +82,50 @@ export async function createHistoryLogbook(id, schadules, namaMahasiswa, nim, ke
         throw error;
     }
 }
+
+export async function archiveScheduleTransaction(scheduleId) {
+    const conn = await db.getConnection();
+    try {
+        // 1. Ambil data schedule aktif
+        const [scheduleRows] = await conn.query("SELECT * FROM schadule WHERE id = ?", [scheduleId]);
+        if (scheduleRows.length === 0) {
+            throw new Error("Jadwal tidak ditemukan!");
+        }
+        const sch = scheduleRows[0];
+
+        // 2. Ambil data logbook aktif yang berelasi
+        const [logbookRows] = await conn.query("SELECT * FROM logbook WHERE schadules = ?", [scheduleId]);
+
+        // 3. Mulai Transaksi
+        await conn.beginTransaction();
+
+        // 4. Salin ke history_schadule
+        await conn.query(
+            "INSERT INTO history_schadule (id, lab_id, prodi_kelas, matkul, dosen, tanggal, jammulai, jamselesai) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [sch.id, sch.lab_id, sch.prodi_kelas, sch.matkul, sch.dosen, sch.tanggal, sch.jammulai, sch.jamselesai]
+        );
+
+        // 5. Salin ke history_logbook
+        for (const log of logbookRows) {
+            await conn.query(
+                "INSERT INTO history_logbook (id, schadules, namaMahasiswa, nim, kelas, jumlah_hadir, no_wa) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [log.id, log.schadules, log.namaMahasiswa, log.nim, log.kelas, log.jumlah_hadir, log.no_wa]
+            );
+        }
+
+        // 6. Hapus data dari tabel aktif
+        await conn.query("DELETE FROM logbook WHERE schadules = ?", [scheduleId]);
+        await conn.query("DELETE FROM schadule WHERE id = ?", [scheduleId]);
+
+        // 7. Commit Transaksi
+        await conn.commit();
+        console.log(`models historyModel say: Berhasil mengarsipkan jadwal ID ${scheduleId} beserta ${logbookRows.length} logbook terkait ke history`);
+        return { scheduleId, archivedLogbooksCount: logbookRows.length };
+    } catch (error) {
+        await conn.rollback();
+        console.error(`models historyModel say error in archiveScheduleTransaction: ${error}`);
+        throw error;
+    } finally {
+        conn.release();
+    }
+}

@@ -38,18 +38,29 @@ export async function clearAllSchedules() {
 }
 
 export async function deleteScheduleById(id) {
-    const sql = "DELETE FROM schadule WHERE id = ?"
+    const conn = await db.getConnection()
     try {
-        const [hasil] = await db.query(sql, [id])
+        await conn.beginTransaction()
+        // Hapus logbook terkait terlebih dahulu (cascade delete)
+        await conn.query("DELETE FROM logbook WHERE schadules = ?", [id])
+        
+        // Hapus jadwal utama
+        const [hasil] = await conn.query("DELETE FROM schadule WHERE id = ?", [id])
+        
+        await conn.commit()
+        
         if (hasil.affectedRows > 0) {
-            console.log(`models scheduleModel say: Berhasil menghapus data dengan id ${id}`);
+            console.log(`models scheduleModel say: Berhasil menghapus data dengan id ${id} beserta logbook terkait`);
         } else {
             console.log(`models scheduleModel say: Percobaan hapus selesai, tapi data dengan id ${id} tidak ditemukan`);
         }
         return hasil;
     } catch (error) {
+        await conn.rollback()
         console.error(`models scheduleModel say error: Gagal menghapus data dengan id ${id}. Error: ${error}`);
         throw error;
+    } finally {
+        conn.release()
     }
 }
 
@@ -84,6 +95,39 @@ export async function getSchedulesWithLab() {
         return query
     } catch (error) {
         console.error("models scheduleModel say error: " + error)
+        throw error
+    }
+}
+
+export async function checkScheduleOverlap(lab_id, tanggal, jammulai, jamselesai) {
+    const sql = `
+        SELECT * FROM schadule 
+        WHERE lab_id = ? 
+          AND tanggal = ? 
+          AND jammulai < ? 
+          AND jamselesai > ?
+    `
+    try {
+        const [hasil] = await db.query(sql, [lab_id, tanggal, jamselesai, jammulai])
+        return hasil
+    } catch (error) {
+        console.error("models scheduleModel say error in checkScheduleOverlap: " + error)
+        throw error
+    }
+}
+
+export async function getScheduleByIdWithCapacity(id) {
+    const sql = `
+        SELECT schadule.*, laboratorium.kapasitas 
+        FROM schadule 
+        LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab 
+        WHERE schadule.id = ?
+    `
+    try {
+        const [hasil] = await db.query(sql, [id])
+        return hasil[0] || null
+    } catch (error) {
+        console.error("models scheduleModel say error in getScheduleByIdWithCapacity: " + error)
         throw error
     }
 }

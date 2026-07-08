@@ -4,7 +4,7 @@ import { masuk, register } from "../controller/authController.js"
 import { penambahanJadwal } from "../controller/scheduleController.js"
 import { post, penambahanLog } from "../controller/logbookController.js"
 import emailController from "../controller/supportController.js"
-import { postHistorySchaduleCtrl, postHistoryLogbookCtrl } from "../controller/historyController.js"
+import { postHistorySchaduleCtrl, postHistoryLogbookCtrl, archiveScheduleCtrl } from "../controller/historyController.js"
 import check from "../middleware/fieldCheck.js";
 import { inputLogin } from "../middleware/checkInput.js";
 import rateLimit from "express-rate-limit";
@@ -28,5 +28,6 @@ app.post("/logbook", penambahanLog)
 app.post("/pengaduan", emailController)
 app.post("/history/schadule", validmid, logs, postHistorySchaduleCtrl)
 app.post("/history/logbook", validmid, logs, postHistoryLogbookCtrl)
+app.post("/history/archive/:id", validmid, logs, archiveScheduleCtrl)
 
 export default app;

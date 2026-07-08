@@ -2,7 +2,8 @@ import {
     getHistorySchedules,
     getHistoryLogbooks,
     createHistorySchedule,
-    createHistoryLogbook
+    createHistoryLogbook,
+    archiveScheduleTransaction
 } from "../models/historyModel.js"
 
 export async function fetchHistorySchadule() {
@@ -67,4 +68,9 @@ export async function addHistoryLogbook(req) {
         targetWa
     )
     return dataInput
+}
+
+export async function archiveScheduleService(scheduleId) {
+    const data = await archiveScheduleTransaction(scheduleId)
+    return data
 }

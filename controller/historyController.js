@@ -4,8 +4,10 @@ import {
     fetchHistorySchadule,
     fetchHistoryLogbook,
     addHistorySchadule,
-    addHistoryLogbook
+    addHistoryLogbook,
+    archiveScheduleService
 } from "../services/historyService.js"
+import { getSchedulesWithLabService } from "../services/scheduleService.js"
 
 export const getHistorySchaduleCtrl = async (req, res) => {
     try {
@@ -52,5 +54,26 @@ export const postHistoryLogbookCtrl = async (req, res) => {
     } catch (error) {
         console.error("Error in postHistoryLogbookCtrl:", error)
         res.status(500).json({ error: "Gagal menyimpan data history logbook" })
+    }
+}
+
+export const archiveScheduleCtrl = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const hasil = await archiveScheduleService(id)
+        response(hasil, 200, res)
+
+        // Broadcast data terupdate ke semua client lewat WebSocket
+        const activeFresh = await getSchedulesWithLabService()
+        const historySchFresh = await fetchHistorySchadule()
+        const historyLogFresh = await fetchHistoryLogbook()
+
+        getIO().emit("penggunaanlab:update", activeFresh)
+        getIO().emit("history:schadule:update", historySchFresh)
+        getIO().emit("history:logbook:update", historyLogFresh)
+    } catch (error) {
+        console.error("Error in archiveScheduleCtrl:", error)
+        const status = error.message === "Jadwal tidak ditemukan!" ? 404 : 500;
+        res.status(status).json({ error: error.message || "Gagal mengarsipkan jadwal" })
     }
 }
