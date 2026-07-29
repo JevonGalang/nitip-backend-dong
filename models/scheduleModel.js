@@ -10,8 +10,20 @@ export async function getAllSchedules() {
             schadule.tanggal,
             schadule.jammulai,
             schadule.jamselesai,
+            schadule.is_auto,
             laboratorium.id_lab,
-            laboratorium.nama_lab
+            laboratorium.nama_lab,
+            (SELECT COUNT(*) FROM logbook lb WHERE lb.schadules = schadule.id) AS total_logbook,
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM logbook lb WHERE lb.schadules = schadule.id) 
+                THEN 'DIPESAN' 
+                ELSE 'BELUM DIPESAN' 
+            END AS status_pesanan,
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM logbook lb WHERE lb.schadules = schadule.id) 
+                THEN TRUE 
+                ELSE FALSE 
+            END AS is_booked
         FROM schadule
         LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab
     `
@@ -75,10 +87,10 @@ export async function getSchedulesByLabType(jenislab) {
     }
 }
 
-export async function createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya) {
-    const sql = "INSERT INTO schadule (id, lab_id, prodi_kelas, matkul, dosen, tanggal, jammulai, jamselesai) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)"
+export async function createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya, is_auto = 0) {
+    const sql = "INSERT INTO schadule (lab_id, prodi_kelas, matkul, dosen, tanggal, jammulai, jamselesai, is_auto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     try {
-        const [nambahin] = await db.query(sql, [labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya])
+        const [nambahin] = await db.query(sql, [labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya, is_auto])
         console.log(`models scheduleModel say: Berhasil menambahkan jadwal kuliah untuk matkul ${matkulnya}`);
         return nambahin
     } catch (error) {
@@ -88,7 +100,26 @@ export async function createSchedule(labnya, prodinya, matkulnya, dosennya, tang
 }
 
 export async function getSchedulesWithLab() {
-    const sql = "SELECT * FROM schadule LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab"
+    const sql = `
+        SELECT 
+            schadule.*,
+            laboratorium.nama_lab,
+            laboratorium.jenis_lab,
+            laboratorium.kapasitas,
+            (SELECT COUNT(*) FROM logbook lb WHERE lb.schadules = schadule.id) AS total_logbook,
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM logbook lb WHERE lb.schadules = schadule.id) 
+                THEN 'DIPESAN' 
+                ELSE 'BELUM DIPESAN' 
+            END AS status_pesanan,
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM logbook lb WHERE lb.schadules = schadule.id) 
+                THEN TRUE 
+                ELSE FALSE 
+            END AS is_booked
+        FROM schadule 
+        LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab
+    `
     try {
         const [query] = await db.query(sql)
         console.log("models scheduleModel say: Berhasil mengambil data users + lab");

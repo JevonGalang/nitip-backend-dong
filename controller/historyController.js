@@ -11,7 +11,7 @@ import { getSchedulesWithLabService } from "../services/scheduleService.js"
 
 export const getHistorySchaduleCtrl = async (req, res) => {
     try {
-        const hasil = await fetchHistorySchadule()
+        const hasil = await fetchHistorySchadule(req.query)
         response(hasil, 200, res)
     } catch (error) {
         console.error("Error in getHistorySchaduleCtrl:", error)
@@ -21,7 +21,7 @@ export const getHistorySchaduleCtrl = async (req, res) => {
 
 export const getHistoryLogbookCtrl = async (req, res) => {
     try {
-        const hasil = await fetchHistoryLogbook()
+        const hasil = await fetchHistoryLogbook(req.query)
         response(hasil, 200, res)
     } catch (error) {
         console.error("Error in getHistoryLogbookCtrl:", error)

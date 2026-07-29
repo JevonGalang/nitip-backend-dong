@@ -61,7 +61,7 @@ export async function deleteLogbookById(id) {
 }
 
 export async function createLogbook(schadule, namaKetua, nim, kelas, jumlahPeserta, nomorWa) {
-    const sql = "INSERT INTO logbook (id, schadules, namaMahasiswa, nim, kelas, jumlah_hadir, no_wa) VALUES (NULL, ?, ?, ?, ?, ?, ?)"
+    const sql = "INSERT INTO logbook (schadules, namaMahasiswa, nim, kelas, jumlah_hadir, no_wa) VALUES (?, ?, ?, ?, ?, ?)"
     try {
         const [hasil] = await db.query(sql, [schadule, namaKetua, nim, kelas, jumlahPeserta, nomorWa])
         console.log(`models logbookModel say: Berhasil menginput logbook untuk mahasiswa ${namaKetua} (NIM: ${nim})`);

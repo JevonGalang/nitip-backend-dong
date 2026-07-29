@@ -13,7 +13,7 @@ export async function findUserByName(username) {
 }
 
 export async function createUser(username, password, role) {
-    const sql = "INSERT INTO users (id, username, password, role) VALUES (NULL, ?, ?, ?)"
+    const sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
     try {
         const [hasil] = await db.query(sql, [username, password, role])
         console.log(`models userModel say: Berhasil mendaftarkan user baru: ${username} (role: ${role})`);

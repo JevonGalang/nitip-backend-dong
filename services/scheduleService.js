@@ -49,7 +49,7 @@ export async function getSchedulesByLabTypeService(req) {
 }
 
 export async function createScheduleService(req) {
-    const { labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya } = req.body
+    const { labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya, is_auto, isAuto } = req.body
     
     // Pengecekan bentrok jadwal
     const bentrok = await checkScheduleOverlap(labnya, tanggalnya, jammulainya, jamselesainya)
@@ -57,7 +57,10 @@ export async function createScheduleService(req) {
         throw new Error("Jadwal bertabrakan dengan kelas lain di laboratorium yang sama pada jam tersebut!")
     }
 
-    const inputData = await createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya)
+    const autoFlag = is_auto ?? isAuto
+    const isAutoVal = autoFlag === true || autoFlag === 1 || autoFlag === 'true' || autoFlag === '1' ? 1 : 0
+
+    const inputData = await createSchedule(labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya, isAutoVal)
     return inputData;
 }
 

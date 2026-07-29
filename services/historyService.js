@@ -1,28 +1,129 @@
 import {
-    getHistorySchedules,
-    getHistoryLogbooks,
+    getFilteredHistorySchedules,
+    getFilteredHistoryLogbooks,
     createHistorySchedule,
     createHistoryLogbook,
     archiveScheduleTransaction
 } from "../models/historyModel.js"
 
-export async function fetchHistorySchadule() {
-    const data = await getHistorySchedules()
-    return data
+function groupDataByMonth(data) {
+    const grouped = {};
+    for (const item of data) {
+        if (!item.tanggal) continue;
+        const d = new Date(item.tanggal);
+        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (!grouped[monthKey]) {
+            grouped[monthKey] = [];
+        }
+        grouped[monthKey].push(item);
+    }
+    return grouped;
 }
 
-export async function fetchHistoryLogbook() {
-    const data = await getHistoryLogbooks()
-    return data
+function groupDataBySemester(data) {
+    const grouped = {
+        "Semester 1 (Agustus - Januari)": [],
+        "Semester 2 (Februari - Agustus)": []
+    };
+    for (const item of data) {
+        if (!item.tanggal) continue;
+        const d = new Date(item.tanggal);
+        const month = d.getMonth() + 1;
+        if ([8, 9, 10, 11, 12, 1].includes(month)) {
+            grouped["Semester 1 (Agustus - Januari)"].push(item);
+        } else {
+            grouped["Semester 2 (Februari - Agustus)"].push(item);
+        }
+    }
+    return grouped;
+}
+
+export async function fetchHistorySchadule(queryParams = {}) {
+    const {
+        month, bulan,
+        year, tahun,
+        semester,
+        sort,
+        group_by, groupBy,
+        lab_id, labId
+    } = queryParams;
+
+    const filters = {
+        month: month || bulan,
+        year: year || tahun,
+        semester: semester,
+        sort: sort || 'DESC',
+        lab_id: lab_id || labId
+    };
+
+    const rawData = await getFilteredHistorySchedules(filters);
+
+    const groupType = group_by || groupBy;
+    if (groupType === 'month' || groupType === 'bulan') {
+        return {
+            total: rawData.length,
+            filters,
+            grouped_by: 'month',
+            data: groupDataByMonth(rawData)
+        };
+    } else if (groupType === 'semester') {
+        return {
+            total: rawData.length,
+            filters,
+            grouped_by: 'semester',
+            data: groupDataBySemester(rawData)
+        };
+    }
+
+    return rawData;
+}
+
+export async function fetchHistoryLogbook(queryParams = {}) {
+    const {
+        month, bulan,
+        year, tahun,
+        semester,
+        sort,
+        group_by, groupBy,
+        lab_id, labId
+    } = queryParams;
+
+    const filters = {
+        month: month || bulan,
+        year: year || tahun,
+        semester: semester,
+        sort: sort || 'DESC',
+        lab_id: lab_id || labId
+    };
+
+    const rawData = await getFilteredHistoryLogbooks(filters);
+
+    const groupType = group_by || groupBy;
+    if (groupType === 'month' || groupType === 'bulan') {
+        return {
+            total: rawData.length,
+            filters,
+            grouped_by: 'month',
+            data: groupDataByMonth(rawData)
+        };
+    } else if (groupType === 'semester') {
+        return {
+            total: rawData.length,
+            filters,
+            grouped_by: 'semester',
+            data: groupDataBySemester(rawData)
+        };
+    }
+
+    return rawData;
 }
 
 export async function addHistorySchadule(req) {
     const { 
-        id, lab_id, prodi_kelas, matkul, dosen, tanggal, jammulai, jamselesai,
+        lab_id, prodi_kelas, matkul, dosen, tanggal, jammulai, jamselesai, is_auto, isAuto,
         labnya, prodinya, matkulnya, dosennya, tanggalnya, jammulainya, jamselesainya
     } = req.body
 
-    const targetId = id || null
     const targetLab = lab_id || labnya
     const targetProdi = prodi_kelas || prodinya
     const targetMatkul = matkul || matkulnya
@@ -30,28 +131,34 @@ export async function addHistorySchadule(req) {
     const targetTanggal = tanggal || tanggalnya
     const targetJamMulai = jammulai || jammulainya
     const targetJamSelesai = jamselesai || jamselesainya
+    const autoFlag = is_auto ?? isAuto
+    const targetIsAuto = autoFlag === true || autoFlag === 1 || autoFlag === 'true' || autoFlag === '1' ? 1 : 0
 
     const dataInput = await createHistorySchedule(
-        targetId,
         targetLab,
         targetProdi,
         targetMatkul,
         targetDosen,
         targetTanggal,
         targetJamMulai,
-        targetJamSelesai
+        targetJamSelesai,
+        targetIsAuto
     )
     return dataInput
 }
 
 export async function addHistoryLogbook(req) {
     const {
-        id, schadules, namaMahasiswa, nim, kelas, jumlah_hadir, no_wa,
-        schadule, namaKetua, jumlahPeserta, nomorWa
+        schadules, namaMahasiswa, nim, kelas, jumlah_hadir, no_wa,
+        schadule, namaKetua, jumlahPeserta, nomorWa,
+        schadule_id, schedule_id, scheduleId, schaduleId
     } = req.body
 
-    const targetId = id || null
-    const targetSchadule = schadules || schadule
+    const targetSchadule = schadules || schadule || schadule_id || schedule_id || scheduleId || schaduleId
+    if (!targetSchadule) {
+        throw new Error("ID Jadwal History (schadules) wajib diisi dan tidak boleh NULL!")
+    }
+
     const targetNama = namaMahasiswa || namaKetua
     const targetNim = nim
     const targetKelas = kelas
@@ -59,7 +166,6 @@ export async function addHistoryLogbook(req) {
     const targetWa = no_wa || nomorWa
 
     const dataInput = await createHistoryLogbook(
-        targetId,
         targetSchadule,
         targetNama,
         targetNim,

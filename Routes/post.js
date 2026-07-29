@@ -21,7 +21,7 @@ const limiter = rateLimit({
 const app = e.Router();
 
 app.post("/form", logs, check, post);
-app.post("/login", inputLogin, logs, limiter, masuk)
+app.post("/login", inputLogin, logs,  masuk)
 app.post("/formadmin", logs, penambahanJadwal)
 app.post("/regist", register)
 app.post("/logbook", penambahanLog)

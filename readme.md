@@ -325,6 +325,34 @@ PASSGMAIL=your_app_password
 | `jam_masuk`           | TIME     | Jam masuk                    |
 | `keterangan`          | TEXT     | Keterangan tambahan          |
 
+### Tabel `schadule` (Jadwal Kuliah)
+
+| Kolom         | Tipe       | Deskripsi                                                 |
+| ------------- | ---------- | --------------------------------------------------------- |
+| `id`          | INT (PK)   | Auto increment                                            |
+| `lab_id`      | INT (FK)   | ID laboratorium                                           |
+| `prodi_kelas` | VARCHAR    | Program studi & kelas                                     |
+| `matkul`      | VARCHAR    | Mata kuliah                                               |
+| `dosen`       | VARCHAR    | Dosen pengampu                                            |
+| `tanggal`     | DATE       | Tanggal perkuliahan                                       |
+| `jammulai`    | TIME       | Jam mulai perkuliahan                                     |
+| `jamselesai`  | TIME       | Jam selesai perkuliahan                                   |
+| `is_auto`     | TINYINT(1) | `1` = Otomatis via XLSX, `0` = Manual (Default: `0`)     |
+
+### Tabel `history_schadule` (Riwayat Jadwal)
+
+| Kolom         | Tipe       | Deskripsi                                                 |
+| ------------- | ---------- | --------------------------------------------------------- |
+| `id`          | INT (PK)   | ID Jadwal                                                 |
+| `lab_id`      | INT        | ID laboratorium                                           |
+| `prodi_kelas` | VARCHAR    | Program studi & kelas                                     |
+| `matkul`      | VARCHAR    | Mata kuliah                                               |
+| `dosen`       | VARCHAR    | Dosen pengampu                                            |
+| `tanggal`     | DATE       | Tanggal perkuliahan                                       |
+| `jammulai`    | TIME       | Jam mulai perkuliahan                                     |
+| `jamselesai`  | TIME       | Jam selesai perkuliahan                                   |
+| `is_auto`     | TINYINT(1) | `1` = Otomatis via XLSX, `0` = Manual                     |
+
 ### Tabel `laboratorium`
 
 | Kolom      | Tipe     | Deskripsi            |
