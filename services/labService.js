@@ -1,7 +1,7 @@
 import { getAllLabs, getLabUsagePercentage } from "../models/labModel.js"
 
-export async function getAllLabsService() {
-    const hasilnya = await getAllLabs()
+export async function getAllLabsService(labIds) {
+    const hasilnya = await getAllLabs(labIds)
     return hasilnya
 }
 
@@ -15,8 +15,7 @@ export async function getLabUsagePercentageService(req) {
         filterJenis = req.query.jenis.split(',').map(j => j.trim())
     }
 
-    const hasilnya = await getLabUsagePercentage(totalOperasional, totalPekan, filterJenis, onlyAuto)
+    const hasilnya = await getLabUsagePercentage(totalOperasional, totalPekan, filterJenis, onlyAuto, req.labIds)
     return hasilnya
 }
-
 

@@ -1,5 +1,6 @@
 import { findUserByName, createUser } from "../models/userModel.js"
 import { hash, compare } from "../helpers/bycriptHash.js"
+import { roleRbac } from "../middleware/rbacMiddleware.js"
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -25,6 +26,11 @@ export async function loginService(req) {
 
 export async function registerService(req) {
     const { username, password, role } = req.body;
+
+    if (!roleRbac.includes(role)) {
+        throw new Error("role harus admin, yusuf, ahmad, atau ade")
+    }
+
     const hashpass = await hash(password, salt)
     const resaultdb = await createUser(username, hashpass, role);  
     console.log("register berhasil untuk: " + username);

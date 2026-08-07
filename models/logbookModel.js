@@ -1,7 +1,7 @@
 import db from "../config/conection.js"
 
-export async function getAllLogbooks() {
-    const sql = `
+export async function getAllLogbooks(labIds = null) {
+    let sql = `
         SELECT 
             logbook.id,
             logbook.namaMahasiswa,
@@ -22,12 +22,35 @@ export async function getAllLogbooks() {
         LEFT JOIN schadule ON logbook.schadules = schadule.id
         LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab
     `
+    const queryParams = []
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        sql += " WHERE schadule.lab_id IN (?)"
+        queryParams.push(labIds)
+    }
     try {
-        const [hasil] = await db.query(sql)
+        const [hasil] = await db.query(sql, queryParams)
         console.log(`models logbookModel say: Berhasil mengambil data logbook (${hasil.length} baris)`);
         return hasil
     } catch (error) {
         console.error("models logbookModel say error: " + error)
+        throw error
+    }
+}
+
+export async function getLogbookByIdWithLab(id) {
+    const sql = `
+        SELECT logbook.id, schadule.lab_id
+        FROM logbook
+        LEFT JOIN schadule ON logbook.schadules = schadule.id
+        WHERE logbook.id = ?
+    `
+    try {
+        const [hasil] = await db.query(sql, [id])
+        return hasil[0] || null
+    } catch (error) {
+        console.error("models logbookModel say error getLogbookByIdWithLab: " + error)
         throw error
     }
 }

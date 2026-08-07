@@ -7,11 +7,11 @@ import {
     getSchedulesWithLabService
 } from "../services/scheduleService.js"
 import { response } from "../helpers/response.js"
-import { getIO } from "../config/socket.js"
+import { emitByLab } from "../config/socket.js"
 
 export const lihatJadwal = async (req, res) => {
     try {
-        const hasil = await getAllSchedulesService()
+        const hasil = await getAllSchedulesService(req.labIds)
         response(hasil, 200, res)
     } catch (error) {
         res.status(500).json({ error: "error di bagian jadwal" })
@@ -23,7 +23,7 @@ export const bersihkanJadwal = async (req, res) => {
     try {
         const hasil = await clearAllSchedulesService()
         response(hasil, 200, res)
-        getIO().emit("penggunaanlab:update", [])
+        emitByLab("penggunaanlab:update", [])
     } catch (error) {
         res.status(500).json({ error: "error saat menghapus semua jadwal" })
         console.error(error)
@@ -35,7 +35,7 @@ export const hapus = async (req, res) => {
         const hasil = await deleteScheduleService(req)
         response(hasil, 200, res)
         const dataFresh = await getSchedulesWithLabService()
-        getIO().emit("penggunaanlab:update", dataFresh)
+        emitByLab("penggunaanlab:update", dataFresh)
     } catch (error) {
         res.status(error.message.includes("tidak ditemukan") ? 404 : 500).json({ error: error.message })
         console.error(error)
@@ -57,7 +57,7 @@ export const penambahanJadwal = async (req, res) => {
         const hasilnya = await createScheduleService(req)
         response(hasilnya, 200, res)
         const dataFresh = await getSchedulesWithLabService()
-        getIO().emit("penggunaanlab:update", dataFresh)
+        emitByLab("penggunaanlab:update", dataFresh)
     } catch (err) {
         console.error(err)
         const status = err.message.includes("Jadwal bertabrakan") ? 400 : 500;
@@ -70,7 +70,7 @@ export const penambahanJadwal = async (req, res) => {
 // Handler ini dinamai "history" di kode asli, namun tugasnya mengembalikan penggunaan lab aktif
 export const history = async (req, res) => {
     try {
-        const hasil = await getSchedulesWithLabService()
+        const hasil = await getSchedulesWithLabService(req.labIds)
         response(hasil, 200, res)
     } catch (error) {
         res.status(500).json("error di bagian alldatas")

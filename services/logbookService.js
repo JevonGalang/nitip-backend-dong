@@ -6,8 +6,8 @@ import {
 } from "../models/logbookModel.js"
 import { getScheduleByIdWithCapacity } from "../models/scheduleModel.js"
 
-export async function getAllLogbooksService() {
-    const hasilnya = await getAllLogbooks()
+export async function getAllLogbooksService(labIds) {
+    const hasilnya = await getAllLogbooks(labIds)
     return hasilnya
 }
 

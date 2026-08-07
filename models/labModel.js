@@ -1,9 +1,16 @@
 import db from "../config/conection.js"
 
-export async function getAllLabs() {
-    const sql = "SELECT * FROM laboratorium"
+export async function getAllLabs(labIds = null) {
+    let sql = "SELECT * FROM laboratorium"
+    const queryParams = []
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        sql += " WHERE id_lab IN (?)"
+        queryParams.push(labIds)
+    }
     try {
-        const [hasil] = await db.query(sql)
+        const [hasil] = await db.query(sql, queryParams)
         console.log(`models labModel say: Berhasil mengambil data laboratorium (${hasil.length} baris)`);
         return hasil
     } catch (error) {
@@ -12,7 +19,22 @@ export async function getAllLabs() {
     }
 }
 
-export async function getLabUsagePercentage(totalOperasional = 680, totalPekan = 16, filterJenis = ['tisimat', 'matisi'], onlyAuto = true) {
+export async function getLabsByIds(labIds) {
+    return getAllLabs(labIds)
+}
+
+export async function getLabById(id) {
+    const sql = "SELECT * FROM laboratorium WHERE id_lab = ?"
+    try {
+        const [hasil] = await db.query(sql, [id])
+        return hasil[0] || null
+    } catch (error) {
+        console.error("models labModel say error getLabById: " + error)
+        throw error
+    }
+}
+
+export async function getLabUsagePercentage(totalOperasional = 680, totalPekan = 16, filterJenis = ['tisimat', 'matisi'], onlyAuto = true, labIds = null) {
     let whereClause = ""
     const queryParams = []
 
@@ -20,6 +42,12 @@ export async function getLabUsagePercentage(totalOperasional = 680, totalPekan =
         const conditions = filterJenis.map(() => "LOWER(l.jenis_lab) LIKE ?").join(" OR ")
         whereClause = `WHERE (${conditions})`
         filterJenis.forEach(j => queryParams.push(`%${j.toLowerCase()}%`))
+    }
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        whereClause += whereClause ? " AND l.id_lab IN (?)" : "WHERE l.id_lab IN (?)"
+        queryParams.push(labIds)
     }
 
     const autoCondition = onlyAuto ? "AND s.is_auto = 1" : ""

@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { findUserById } from "../models/userModel.js"
 dotenv.config()
 const SECRET = process.env.SECRET
 
-const response = (req,res,next) => {
+const response = async (req,res,next) => {
      const veriv = req.headers.authorization
 
     
@@ -24,7 +25,14 @@ const response = (req,res,next) => {
                 SECRET
             );
 
-        req.user = decoded;
+        const user = await findUserById(decoded.id)
+        if (!user) {
+            return res.status(401).json({
+                pesan: "User tidak ditemukan"
+            })
+        }
+
+        req.user = user;
 
         next();
 

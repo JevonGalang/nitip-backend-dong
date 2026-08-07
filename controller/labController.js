@@ -3,7 +3,7 @@ import { response } from "../helpers/response.js"
 
 export const lihatLab = async (req, res) => {
     try {
-        const hasil = await getAllLabsService()
+        const hasil = await getAllLabsService(req.labIds)
         response(hasil, 200, res)
     } catch (error) {
         res.status(500).json({ error: "error di bagian laboratorium" })
@@ -20,4 +20,3 @@ export const persentasePenggunaanLab = async (req, res) => {
         console.error(error)
     }
 }
-

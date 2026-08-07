@@ -8,8 +8,8 @@ import {
     checkScheduleOverlap
 } from "../models/scheduleModel.js"
 
-export async function getAllSchedulesService() {
-    const hasilnya = await getAllSchedules()
+export async function getAllSchedulesService(labIds) {
+    const hasilnya = await getAllSchedules(labIds)
     return hasilnya
 }
 
@@ -40,7 +40,7 @@ export async function getSchedulesByLabTypeService(req) {
     }
     
     try {
-        const hasilnya = await getSchedulesByLabType(jenisLab)
+        const hasilnya = await getSchedulesByLabType(jenisLab, req.labIds)
         return hasilnya;
     } catch (error) {
         console.error("spillbyjenis say: " + error)
@@ -64,7 +64,7 @@ export async function createScheduleService(req) {
     return inputData;
 }
 
-export async function getSchedulesWithLabService() {
-    const hasilnya = await getSchedulesWithLab()
+export async function getSchedulesWithLabService(labIds) {
+    const hasilnya = await getSchedulesWithLab(labIds)
     return hasilnya
 }

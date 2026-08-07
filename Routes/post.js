@@ -9,6 +9,7 @@ import check from "../middleware/fieldCheck.js";
 import { inputLogin } from "../middleware/checkInput.js";
 import rateLimit from "express-rate-limit";
 import validmid from "../middleware/validMiddleware.js"
+import { aksesLab, hanyaAdmin, cekAksesJadwalParam, cekAksesJadwalBody, cekAksesLabBody } from "../middleware/rbacMiddleware.js"
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, 
@@ -20,14 +21,16 @@ const limiter = rateLimit({
 
 const app = e.Router();
 
-app.post("/form", logs, check, post);
+// Endpoint publik untuk mahasiswa mengisi logbook tanpa akun
+app.post("/public/logbook", limiter, penambahanLog)
+app.post("/form", validmid, aksesLab, cekAksesJadwalBody, logs, check, post);
 app.post("/login", inputLogin, logs,  masuk)
-app.post("/formadmin", logs, penambahanJadwal)
-app.post("/regist", register)
-app.post("/logbook", penambahanLog)
+app.post("/formadmin", validmid, aksesLab, cekAksesLabBody, logs, penambahanJadwal)
+app.post("/regist", validmid, hanyaAdmin, register)
+app.post("/logbook", validmid, aksesLab, cekAksesJadwalBody, penambahanLog)
 app.post("/pengaduan", emailController)
-app.post("/history/schadule", validmid, logs, postHistorySchaduleCtrl)
-app.post("/history/logbook", validmid, logs, postHistoryLogbookCtrl)
-app.post("/history/archive/:id", validmid, logs, archiveScheduleCtrl)
+app.post("/history/schadule", validmid, aksesLab, cekAksesLabBody, logs, postHistorySchaduleCtrl)
+app.post("/history/logbook", validmid, hanyaAdmin, logs, postHistoryLogbookCtrl)
+app.post("/history/archive/:id", validmid, aksesLab, cekAksesJadwalParam, logs, archiveScheduleCtrl)
 
 export default app;

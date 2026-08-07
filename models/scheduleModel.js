@@ -1,7 +1,7 @@
 import db from "../config/conection.js"
 
-export async function getAllSchedules() {
-    const sql = `
+export async function getAllSchedules(labIds = null) {
+    let sql = `
         SELECT 
             schadule.id,
             schadule.prodi_kelas,
@@ -27,8 +27,15 @@ export async function getAllSchedules() {
         FROM schadule
         LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab
     `
+    const queryParams = []
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        sql += " WHERE schadule.lab_id IN (?)"
+        queryParams.push(labIds)
+    }
     try {
-        const [hasil] = await db.query(sql)
+        const [hasil] = await db.query(sql, queryParams)
         console.log(`models scheduleModel say: Berhasil mengambil data jadwal (${hasil.length} baris)`);
         return hasil
     } catch (error) {
@@ -76,10 +83,17 @@ export async function deleteScheduleById(id) {
     }
 }
 
-export async function getSchedulesByLabType(jenislab) {
-    const sql = "SELECT * FROM schadule INNER JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab WHERE laboratorium.jenis_lab = ?"
+export async function getSchedulesByLabType(jenislab, labIds = null) {
+    let sql = "SELECT * FROM schadule INNER JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab WHERE laboratorium.jenis_lab = ?"
+    const queryParams = [jenislab]
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        sql += " AND schadule.lab_id IN (?)"
+        queryParams.push(labIds)
+    }
     try {
-        const [hasil] = await db.query(sql, [jenislab])
+        const [hasil] = await db.query(sql, queryParams)
         return hasil
     } catch (error) {
         console.error("models scheduleModel say error: ", error)
@@ -99,8 +113,8 @@ export async function createSchedule(labnya, prodinya, matkulnya, dosennya, tang
     }
 }
 
-export async function getSchedulesWithLab() {
-    const sql = `
+export async function getSchedulesWithLab(labIds = null) {
+    let sql = `
         SELECT 
             schadule.*,
             laboratorium.nama_lab,
@@ -120,8 +134,15 @@ export async function getSchedulesWithLab() {
         FROM schadule 
         LEFT JOIN laboratorium ON schadule.lab_id = laboratorium.id_lab
     `
+    const queryParams = []
+
+    if (Array.isArray(labIds)) {
+        if (labIds.length === 0) return []
+        sql += " WHERE schadule.lab_id IN (?)"
+        queryParams.push(labIds)
+    }
     try {
-        const [query] = await db.query(sql)
+        const [query] = await db.query(sql, queryParams)
         console.log("models scheduleModel say: Berhasil mengambil data users + lab");
         return query
     } catch (error) {
